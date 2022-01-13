@@ -27,7 +27,31 @@ export async function main(ns) {
 		if (corp.funds < 2e11) throw new Error("Investment round 1 went a little wrong.")
 	}
 
+	ns.corporation.upgradeOfficeSize("Agriculture", "Aevum", 15);
+	for (let i = 0; i < 15; i++) {
+		ns.corporation.hireEmployee("Agriculture", "Aevum");
+	}
+	ns.print(await ns.corporation.setAutoJobAssignment("Agriculture", "Aevum", "Engineer", 16));
 
+	const corp = ns.corporation.getCorporation();
+	const tobacco = corp.divisions.find(d => d.type === "Tobacco");
+
+	if (!tobacco) ns.corporation.expandIndustry("Tobacco", "Tobacco");
+
+	const division = ns.corporation.getDivision("Tobacco");
+	const prod1 = division.products.includes("product 1");
+
+	if (!prod1) ns.corporation.makeProduct("Tobacco", "Sector-12", "product 1", 1e9, 1e9);
+
+	let prod = ns.corporation.getProduct("Tobacco", "product 1");
+	while (prod.developmentProgress < 100) {
+		await ns.sleep(10 * 1000);
+		prod = ns.corporation.getProduct("Tobacco", "product 1");
+	}
+
+	ns.corporation.goPublic(0);
+
+	ns.corporation.bribe("Sector-12", 1e12, 1);
 }
 
 function startCorp(ns) {
